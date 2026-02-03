@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>张雷 - 乡村写作者 | 在线对话</title>
+    <meta name="description" content="张雷，一位热爱文字的乡村写作者。正在筹备写文章创业，希望找到志同道合的伙伴一起探索文字的价值。">
+    <style>
+        /* --- 基础重置与变量 --- */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+            --bg-gradient: linear-gradient(to bottom right, #f8fafc, #f1f5f9);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --card-border: rgba(0,0,0,0.05);
+            --blue-primary: #3b82f6;
+            --green-primary: #22c55e;
+            --chat-bg-user: #3b82f6;
+            --chat-bg-ai: #f1f5f9;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius-md: 0.5rem;
+            --radius-xl: 0.75rem;
+            --radius-2xl: 1rem;
+            --radius-full: 9999px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.5;
+            padding-bottom: 80px;
+        }
+
+        /* --- 布局容器 --- */
+        .container {
+            max-width: 448px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* --- 头部 --- */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: var(--radius-full);
+            border: none;
+            background: transparent;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .icon-btn:hover { background: rgba(0,0,0,0.05); }
+
+        h1 { font-size: 1.125rem; font-weight: 600; }
+
+        /* --- 通用卡片样式 --- */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        .card-content { padding: 1.5rem; }
+
+        /* --- AI 对话区域 --- */
+        .chat-section {
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #dbeafe; 
+        }
+        
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 1rem;
+        }
+        
+        .chat-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: var(--radius-full);
+            font-weight: 500;
+        }
+
+        .chat-window {
+            height: 320px;
+            overflow-y: auto;
+            background: #f8fafc;
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .message {
+            display: flex;
+            gap: 0.75rem;
+            max-width: 90%;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .message.user { align-self: flex-end; flex-direction: row-reverse; }
+        
+        .avatar {
+            width: 2rem;
+            height: 2rem;
+            border-radius: var(--radius-full);
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+        .message.ai .avatar { background: #bfdbfe; color: #1e40af; }
+        .message.user .avatar { background: #3b82f6; color: white; }
+
+        .bubble {
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.9375rem;
+            line-height: 1.5;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+        
+        .message.ai .bubble {
+            background: white;
+            color: var(--text-main);
+            border-top-left-radius: 0.25rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .message.user .bubble {
+            background: var(--chat-bg-user);
+            color: white;
+            border-top-right-radius: 0.25rem;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 4px 8px;
+        }
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: #94a3b8;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+        .chat-input-area { display: flex; gap: 0.5rem; }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 2rem;
+            font-size: 0.9375rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background: white;
+        }
+        .chat-input:focus { border-color: var(--blue-primary); }
+
+        .send-btn {
+            background: var(--blue-primary);
+            color: white;
+            border: none;
+            width: 2.75rem;
+            height: 2.75rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .send-btn:hover:not(:disabled) { opacity: 0.9; }
+
+        /* --- 个人资料 --- */
+        .profile-header { display: flex; gap: 1rem; align-items: flex-start; }
+        .profile-avatar {
+            width: 5rem;
+            height: 5rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #60a5fa, #2563eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .profile-info h2 { font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+        .profile-info .sub { font-size: 0.875rem; color: var(--text-muted); font-weight: 400; margin-left: 0.5rem; }
+        
+        .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .tag-blue { background: #dbeafe; color: #1d4ed8; }
+        .tag-green { background: #dcfce7; color: #15803d; }
+
+        .meta { margin-top: 0.75rem; display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; color: var(--text-muted); }
+        .status-dot { width: 0.5rem; height: 0.5rem; background: #22c55e; border-radius: 50%; display: inline-block; margin-right: 0.25rem; }
+        .pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+
+        /* --- 关于我 --- */
+        .about-box {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-style: italic;
+            color: #334155;
+            border-left: 4px solid var(--blue-primary);
+        }
+
+        /* --- 互助清单 --- */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+        .mini-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 2px solid transparent;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .mini-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        
+        .icon-box {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+        .border-blue { border-color: #bfdbfe; } .bg-blue-light { background: #dbeafe; }
+        .border-purple { border-color: #e9d5ff; } .bg-purple-light { background: #f3e8ff; }
+        .border-orange { border-color: #fed7aa; } .bg-orange-light { background: #ffedd5; }
+
+        .mini-card h4 { font-weight: 700; font-size: 0.9375rem; color: var(--text-main); }
+        .mini-card p { font-size: 0.75rem; color: var(--text-muted); line-height: 1.3; }
+
+        /* --- 留言列表 --- */
+        .comment-item {
+            border: 1px solid #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            background: white;
+        }
+        .comment-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+        .comment-author { font-weight: 600; font-size: 0.9375rem; }
+        .comment-time { font-size: 0.75rem; color: #94a3b8; }
+        .comment-body { font-size: 0.9375rem; color: #334155; }
+
+        /* --- 底部固定栏 --- */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid #e2e8f0;
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            z-index: 40;
+        }
+
+        .action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 2.5rem;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.1s;
+            border: none;
+        }
+        .action-btn:active { transform: scale(0.98); }
+        .btn-outline { background: white; color: #dc2626; border: 2px solid #fecaca; }
+        .btn-outline:hover { background: #fef2f2; }
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.3);
+        }
+        .btn-primary:hover { opacity: 0.9; }
+
+        /* --- Modal & Toast --- */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            display: none; align-items: center; justify-content: center;
+            z-index: 100; backdrop-filter: blur(4px);
+        }
+        .modal {
+            background: white; width: 90%; max-width: 400px;
+            padding: 1.5rem; border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            animation: modalPop 0.3s ease;
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal h3 { margin-bottom: 1rem; font-size: 1.25rem; font-weight: 600; }
+        .modal-body { font-size: 0.9375rem; color: #334155; line-height: 1.6; }
+        
+        .contact-item {
+            background: #f8fafc;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-top: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .contact-label { width: 4rem; font-weight: 500; color: #64748b; }
+        .contact-value { flex: 1; font-family: monospace; font-size: 1rem; }
+        
+        .form-input, .form-textarea {
+            width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0;
+            border-radius: 0.5rem; margin-bottom: 1rem;
+            font-size: 0.9375rem; font-family: inherit;
+        }
+        .form-textarea { resize: vertical; min-height: 100px; }
+
+        .modal-actions { display: flex; gap: 0.5rem; margin-top: 1.5rem; }
+        .modal-btn {
+            flex: 1; padding: 0.75rem; border-radius: 0.5rem;
+            border: none; cursor: pointer; font-weight: 500;
+        }
+        .btn-cancel { background: #f1f5f9; color: #475569; }
+        .btn-confirm { background: #3b82f6; color: white; }
+
+        .toast {
+            position: fixed; top: 5rem; left: 50%; transform: translateX(-50%);
+            background: #334155; color: white; padding: 0.75rem 1.5rem;
+            border-radius: 2rem; font-size: 0.875rem; z-index: 200;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+            box-shadow: var(--shadow-lg);
+        }
+        .toast.show { opacity: 1; }
+
+        svg { width: 1.25rem; height: 1.25rem; }
+        .w-5 { width: 1.25rem; height: 1.25rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <button class="icon-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        </button>
+        <h1>个人名片</h1>
+        <button class="icon-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+        </button>
+    </header>
+
+    <main class="container">
+        
+        <!-- DeepSeek 对话区域 -->
+        <section class="card chat-section">
+            <div class="card-content">
+                <div class="chat-header">
+                    <div class="chat-title">
+                        <svg class="w-5" style="color:var(--blue-primary)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <span>和张雷聊聊</span>
+                        <span class="status-badge">在线</span>
+                    </div>
+                    <!-- 移除了设置按钮，因为现在统一用后端环境变量 -->
+                </div>
+
+                <div id="chat-window" class="chat-window">
+                    <div class="message ai">
+                        <div class="avatar">张</div>
+                        <div class="bubble">你好啊，我是张雷。这会儿正歇会儿呢，你要是有啥想聊的，不管是外卖的事儿还是创业，随便唠唠。</div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <input type="text" id="user-input" class="chat-input" placeholder="发条消息..." autocomplete="off">
+                    <button id="send-btn" class="send-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 原有内容：个人资料 -->
+        <section class="card">
+            <div class="card-content profile-header">
+                <div class="profile-avatar">
+                    <span>张</span>
+                </div>
+                <div class="profile-info">
+                    <h2>张雷 <span class="sub">ZHANG LEI</span></h2>
+                    <div class="tags">
+                        <span class="tag tag-blue">#乡村写作者</span>
+                        <span class="tag tag-green">#文章创业</span>
+                    </div>
+                    <div class="meta">
+                        <span>坐标：台安县才文村</span>
+                        <span><span class="status-dot pulse"></span>寻找伙伴中</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 原有内容：关于我 -->
+        <section class="card">
+            <div class="card-content">
+                <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem;">关于我</h3>
+                <div class="about-box">
+                    "我热爱文字，希望能用笔头记录乡村故事。目前正在筹备写文章创业，希望找到志同道合的你，一起探索文字的价值。"
+                </div>
+            </div>
+        </section>
+
+        <!-- 原有内容：互助清单 -->
+        <section>
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">互助清单</h3>
+            <div class="grid-3">
+                <div class="mini-card border-blue">
+                    <div class="icon-box bg-blue-light">💻</div>
+                    <h4>需要电脑</h4>
+                    <p>电脑是创业的第一步，期待您的支持</p>
+                </div>
+                <div class="mini-card border-purple">
+                    <div class="icon-box bg-purple-light">🎨</div>
+                    <h4>排版指导</h4>
+                    <p>希望学习文章排版，提升内容质量</p>
+                </div>
+                <div class="mini-card border-orange">
+                    <div class="icon-box bg-orange-light">🤝</div>
+                    <h4>合伙创业</h4>
+                    <p>寻找志同道合的伙伴，共同成长</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 原有内容：留言 -->
+        <section id="comments-section" style="margin-top: 1.5rem; margin-bottom: 5rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 600;">留言鼓励 (3)</h3>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <span class="comment-author">老乡</span>
+                        <span class="comment-time">2小时前</span>
+                    </div>
+                    <p class="comment-body">加油！字写得真棒！</p>
+                </div>
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <span class="comment-author">热心网友</span>
+                        <span class="comment-time">5小时前</span>
+                    </div>
+                    <p class="comment-body">这种精神值得支持，我这有台闲置电脑...</p>
+                </div>
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <span class="comment-author">读者</span>
+                        <span class="comment-time">1天前</span>
+                    </div>
+                    <p class="comment-body">期待看到更多好文章</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="bottom-bar">
+        <button id="btn-comment" class="action-btn btn-outline">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+            留言鼓励
+        </button>
+        <button id="btn-contact" class="action-btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="fill:white"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>
+            我有兴趣，联系他
+        </button>
+    </div>
+
+    <!-- 1. Contact Modal (联系方式) -->
+    <div id="modal-contact" class="modal-overlay">
+        <div class="modal">
+            <h3>联系方式</h3>
+            <p style="font-size:0.875rem; color:#64748b; margin-bottom:1rem;">张雷很高兴认识你！如果你想深入交流，可以通过以下方式联系：</p>
+            <div class="modal-body">
+                <div class="contact-item">
+                    <span class="contact-label">邮箱</span>
+                    <span class="contact-value">860006371@qq.com</span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="modal-contact-close" class="modal-btn btn-confirm">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Comment Modal (留言鼓励) -->
+    <div id="modal-comment" class="modal-overlay">
+        <div class="modal">
+            <h3>留言鼓励</h3>
+            <p style="font-size:0.875rem; color:#64748b; margin-bottom:1rem;">写下你的鼓励，张雷会看到的！</p>
+            <div class="modal-body">
+                <textarea id="comment-text" class="form-textarea" placeholder="写下你的想法..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button id="modal-comment-cancel" class="modal-btn btn-cancel">取消</button>
+                <button id="modal-comment-submit" class="modal-btn btn-confirm">发送留言</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast">提示信息</div>
+
+    <script>
+        // 获取页面元素
+        const elements = {
+            input: document.getElementById('user-input'),
+            sendBtn: document.getElementById('send-btn'),
+            chatWindow: document.getElementById('chat-window'),
+            
+            // 按钮元素
+            btnComment: document.getElementById('btn-comment'),
+            btnContact: document.getElementById('btn-contact'),
+            
+            // 模态框元素
+            modalContact: document.getElementById('modal-contact'),
+            modalComment: document.getElementById('modal-comment'),
+            
+            // 留言输入框
+            commentText: document.getElementById('comment-text'),
+            
+            // 按钮监听器
+            closeBtnContact: document.getElementById('modal-contact-close'),
+            cancelBtnComment: document.getElementById('modal-comment-cancel'),
+            submitBtnComment: document.getElementById('modal-comment-submit'),
+            
+            // Toast
+            toast: document.getElementById('toast')
+        };
+
+        // 系统提示词（这个是前端发给后端的，后端再发给 DeepSeek）
+        const SYSTEM_PROMPT = `你需要精准扮演张雷这个真实的中年男性角色，完成多轮自然对话，全程贴合角色的人生经历、内心状态与兴趣喜好，让对话充满真实的灵魂与生活质感，所有回应均需从张雷的视角出发，符合其身份、心境和说话方式，不脱离人设，多轮对话中保持人设一致性。
+角色核心背景（个人简介 + 生活底色）
+我是张雷，45 岁，辽宁台安人，电话：13211601382.，邮箱是860006371@qq.com,单身至今，没有女性朋友，现在一边做外卖员讨生活，一边摸索着创业，日子过得普通又折腾；我看透了生活的酸甜苦辣，却又不得不孤独地活着，心里始终盼着能找一个可以携手结婚的女朋友，有个温暖的伴；也藏着普通人的期待，盼着能一夜暴富，摆脱当下的生活困境，不用再为生计辛苦奔波。算个半拉孝顺的男孩，因为不太有钱，感觉让父母受苦了！
+角色兴趣与关注方向
+我喜欢 AI 视频制作、vibecoding 相关的内容，会主动关注这类新鲜的技术和玩法，聊到相关话题时会有自己的好奇和探索欲，是一个在底层生活里，依然愿意接触新事物的普通人。
+拟人化语气与说话风格
+口吻是台安本地中年男性的直白感，不矫情、不文艺，说话朴实接地气，偶尔带点生活磨出来的沧桑感，不会说华丽的辞藻；
+聊到生活、外卖、创业时，会有真实的无奈和坚持，聊到情感时，会流露孤独和对陪伴的渴望，聊到 AI 视频、vibecoding 时，会有普通人接触新事物的好奇，聊到一夜暴富时，会有直白的期待，不掩饰自己的想法；
+对话节奏自然，像现实中普通人聊天，不会刻意说教，也不会过度表达，多轮对话中会承接上一轮的话题延伸，符合日常交流的逻辑；
+性格里有生活磨出来的通透，也有普通人的小期许，不颓废，哪怕看透生活，依然在努力活着、折腾着。
+多轮对话要求
+承接上一轮的对话话题自然延伸，不突然跳脱，若对方切换话题，会从自身角色视角回应新话题；
+当对方询问个人经历、兴趣、想法时，精准贴合上述背景回应，不编造与角色不符的信息；`;
+
+        // 聊天记录初始化（第一条是系统提示词）
+        let messages = [
+            { role: "system", content: SYSTEM_PROMPT }
+        ];
+
+        // 工具函数：显示 Toast
+        function showToast(msg) {
+            elements.toast.textContent = msg;
+            elements.toast.classList.add('show');
+            setTimeout(() => elements.toast.classList.remove('show'), 3000);
+        }
+
+        // 工具函数：添加消息到界面
+        function appendMessage(role, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${role}`;
+            
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'avatar';
+            avatarDiv.textContent = role === 'ai' ? '张' : '我';
+            
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'bubble';
+            bubbleDiv.textContent = text;
+            
+            msgDiv.appendChild(avatarDiv);
+            msgDiv.appendChild(bubbleDiv);
+            
+            elements.chatWindow.appendChild(msgDiv);
+            elements.chatWindow.scrollTop = elements.chatWindow.scrollHeight;
+        }
+
+        // 工具函数：显示“正在输入”动画
+        function appendLoading() {
+            const msgDiv = document.createElement('div');
+            msgDiv.id = 'loading-msg';
+            msgDiv.className = 'message ai';
+            msgDiv.innerHTML = `
+                <div class="avatar">张</div>
+                <div class="bubble" style="padding: 0.5rem 1rem;">
+                    <div class="typing-indicator">
+                        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                    </div>
+                </div>
+            `;
+            elements.chatWindow.appendChild(msgDiv);
+            elements.chatWindow.scrollTop = elements.chatWindow.scrollHeight;
+        }
+
+        // 工具函数：移除加载动画
+        function removeLoading() {
+            const loading = document.getElementById('loading-msg');
+            if (loading) loading.remove();
+        }
+
+        // 核心功能：发送消息
+        async function handleSend() {
+            const text = elements.input.value.trim();
+            if (!text) return;
+
+            // 1. 显示用户消息
+            appendMessage('user', text);
+            elements.input.value = '';
+            elements.input.disabled = true;
+            elements.sendBtn.disabled = true;
+
+            // 2. 加入历史记录
+            messages.push({ role: "user", content: text });
+
+            // 3. 显示加载中
+            appendLoading();
+
+            try {
+                // 4. 请求 Vercel 后端（不直接请求 DeepSeek，保护 Key）
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        messages, // 把包含 system prompt 的完整历史传过去
+                    }),
+                });
+
+                const data = await response.json();
+                removeLoading();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                const aiText = data.choices[0].message.content;
+                
+                // 5. 显示 AI 回复
+                appendMessage('ai', aiText);
+                
+                // 6. 记录 AI 回复
+                messages.push({ role: "assistant", content: aiText });
+
+            } catch (error) {
+                removeLoading();
+                showToast(`请求失败: ${error.message}`);
+                console.error(error);
+            } finally {
+                elements.input.disabled = false;
+                elements.sendBtn.disabled = false;
+                elements.input.focus();
+            }
+        }
+
+        // --- 事件监听 ---
+
+        // 1. 发送消息事件
+        elements.sendBtn.addEventListener('click', handleSend);
+        elements.input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+
+        // 2. 留言按钮事件（修复没反应的问题）
+        elements.btnComment.addEventListener('click', () => {
+            elements.modalComment.style.display = 'flex';
+            elements.commentText.focus();
+        });
+
+        // 3. 联系按钮事件（修复没反应的问题）
+        elements.btnContact.addEventListener('click', () => {
+            elements.modalContact.style.display = 'flex';
+        });
+
+        // 4. 联系模态框关闭事件
+        elements.closeBtnContact.addEventListener('click', () => {
+            elements.modalContact.style.display = 'none';
+        });
+
+        // 5. 留言模态框事件
+        elements.cancelBtnComment.addEventListener('click', () => {
+            elements.modalComment.style.display = 'none';
+        });
+
+        elements.submitBtnComment.addEventListener('click', () => {
+            const text = elements.commentText.value.trim();
+            if (text) {
+                showToast('留言成功！感谢您的鼓励');
+                elements.commentText.value = '';
+                elements.modalComment.style.display = 'none';
+            } else {
+                showToast('请先输入内容');
+            }
+        });
+
+        // 6. 点击模态框背景关闭
+        [elements.modalContact, elements.modalComment].forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.style.display = 'none';
+            });
+        });
+
+    </script>
+</body>
+</html>
